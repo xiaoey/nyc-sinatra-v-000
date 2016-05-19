@@ -7,7 +7,7 @@
 
 List of each figure:<br>
 <% @figures.each do |fig| %>
-  <li><%= fig.name %></li>
+  <li><a href="/figures/<%= fig.id %>"><%= fig.name %></a></li>
 <% end %>
 
 
