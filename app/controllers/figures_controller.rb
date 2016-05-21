@@ -11,11 +11,15 @@ get '/figures/new' do
 end
 
 post '/figures' do
-  @figure = Figure.create(:name => params[:figure][:name])
-  @figure.landmarks << Landmark.find_or_create_by(params[:landmark])
-  @figure.titles << Title.find_or_create_by(params[:title])
-  @figure.save
-  redirect "/figures/#{@figure.id}"
+  @figure = Figure.create(params[:figure])
+
+  if !params[:landmark][:name].empty?
+  @figure.landmarks << Landmark.create(name: params[:landmark][:name])
+  end
+
+  if !params[:title][:name].empty?
+  @figure.titles << Title.create(name: params[:title][:name])
+  end
 end
 
 get '/figures/:id' do
@@ -24,7 +28,7 @@ get '/figures/:id' do
 end
 
 get '/figures/:id/edit' do
-  @landmark = Landmark.find_by_id(params[:id])
+  @figure = Figure.find_by_id(params[:id])
   erb :'/figures/edit'
 end
 
@@ -33,8 +37,9 @@ post '/figures/:id' do
   @figure.titles.clear
   @figure.landmarks.clear
   @figure.update(:name => params[:figure][:name])
-  create_or_update_landmark(params[:figure][:landmark_ids], params[:landmark][:name])
-  create_or_update_title(params[:figure][:title_ids], params[:title][:name])
+  @figure.landmarks << Landmark.find_or_create_by(params[:landmark][:name])
+  @figure.titles << Title.find_or_create_by(params[:title][:name])
+  @figure.save
   redirect "/figures/#{@figure.id}"
 end
 
